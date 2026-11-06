@@ -1,0 +1,13 @@
+import {validateBook} from './domain.js';
+const encoder=new TextEncoder(),decoder=new TextDecoder();
+const b64=bytes=>{let str='';for(const b of bytes)str+=String.fromCharCode(b);return btoa(str);};
+const unb64=str=>Uint8Array.from(atob(str),c=>c.charCodeAt(0));
+async function key(password,salt){if(!password)throw Error('请输入备份密码');const material=await crypto.subtle.importKey('raw',encoder.encode(password),'PBKDF2',false,['deriveKey']);return crypto.subtle.deriveKey({name:'PBKDF2',salt,iterations:210000,hash:'SHA-256'},material,{name:'AES-GCM',length:256},false,['encrypt','decrypt']);}
+export async function encryptBackup(book,password){const salt=crypto.getRandomValues(new Uint8Array(16)),iv=crypto.getRandomValues(new Uint8Array(12));const data=await crypto.subtle.encrypt({name:'AES-GCM',iv},await key(password,salt),encoder.encode(JSON.stringify(book)));return JSON.stringify({format:'xiaoman-encrypted',version:1,salt:b64(salt),iv:b64(iv),data:b64(new Uint8Array(data))});}
+export async function decryptBackup(text,password){let o;try{o=JSON.parse(text);if(o.format!=='xiaoman-encrypted'||o.version!==1||typeof o.data!=='string'||o.data.length>30000000)throw Error();const salt=unb64(o.salt),iv=unb64(o.iv);if(salt.length!==16||iv.length!==12)throw Error();const data=await crypto.subtle.decrypt({name:'AES-GCM',iv},await key(password,salt),unb64(o.data));return validateBook(JSON.parse(decoder.decode(data)));}catch{throw Error('密码不正确、文件损坏或版本不支持；原账本未改变');}}
+const cell=v=>'"'+String(v??'').replace(/^[\s]*[=+\-@\t\r]/,m=>"'"+m).replaceAll('"','""')+'"';
+const csv=rows=>'\ufeff'+rows.map(row=>row.map(cell).join(',')).join('\r\n');
+const name=(s,id)=>s.categories.find(c=>c.id===id)?.name||'';
+export function entryCSV(s){return csv([['日期','收支','大类','子类','金额（元）','备注'],...s.entries.map(e=>[e.date,e.type==='expense'?'支出':'收入',name(s,e.category),name(s,e.sub),(e.amount/100).toFixed(2),e.note])]);}
+export function historyCSV(s){const rows=[['月份','覆盖开始','覆盖结束','收支','大类','金额（元）','补录完成']];for(const [m,group] of Object.entries(s.history))for(const [t,h] of Object.entries(group))for(const [id,v] of Object.entries(h.values))rows.push([m,m+'-01',h.end,t==='expense'?'支出':'收入',name(s,id),(v/100).toFixed(2),h.complete?'是':'否']);return csv(rows);}
+export async function download(text,name,type='application/octet-stream'){const blob=new Blob([text],{type}),file=new File([blob],name,{type});if(navigator.canShare?.({files:[file]})){await navigator.share({files:[file],title:name});return;}const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),60000);}
