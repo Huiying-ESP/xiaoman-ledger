@@ -80,9 +80,22 @@ input[type=date]::-webkit-calendar-picker-indicator,input[type=month]::-webkit-c
 }
 .history-reminder-button .icon { width: 15px; height: 15px; }
 
-/* Keep the installed app within the viewport while allowing vertical scrolling. */
-html, body { max-width: 100%; overflow-x: hidden; }
-.app-scroll { width: 100%; min-width: 0; overflow-x: hidden; touch-action: pan-y pinch-zoom; }
+/* Keep both main pages and dialogs inside the viewport. */
+html, body { max-width: 100%; overflow-x: hidden; overscroll-behavior-x: none; }
+.phone, .modal-layer { touch-action: pan-y pinch-zoom; }
+.modal-layer { overflow: hidden; }
+.app-scroll, .sheet {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  touch-action: pan-y pinch-zoom;
+}
+.sheet .field :is(input, select, textarea),
+#entry-form :is(input, textarea) { max-width: 100%; }
+.sheet .inline-actions > *, .sheet .txn-copy { min-width: 0; overflow-wrap: anywhere; }
+.history-amounts .compact-input > span { overflow-wrap: anywhere; }
 .category-grid { grid-template-columns: repeat(5, minmax(0, 1fr)); }
 .category-choice { min-width: 0; overflow-wrap: anywhere; }
-#entry-form input, #entry-form textarea { max-width: 100%; }
