@@ -7,7 +7,7 @@ const fmt=n=>(n/100).toLocaleString('en-US',{minimumFractionDigits:2,maximumFrac
 const today=()=>{const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;};
 const icon=n=>`<svg class="icon" aria-hidden="true"><use href="#i-${n}"/></svg>`;
 let book,page='home',month=today().slice(0,7),period='month',kind='expense',form=null,busy=false,draftQueue=Promise.resolve(),pendingRestore=null,offline='正在准备离线资源',persistent='';
-const APP_VERSION='2026.11.15.7';
+const APP_VERSION='2026.11.15.8';
 let updateAvailable=false;
 const getCat=id=>book.categories.find(c=>c.id===id);
 const parents=(type,active=true)=>book.categories.filter(c=>!c.parent&&c.type===type&&(!active||c.active));
