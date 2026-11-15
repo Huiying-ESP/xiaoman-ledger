@@ -1,4 +1,4 @@
-const VERSION='xiaoman-v1-20261115-scroll';
+const VERSION='xiaoman-v1-20261115-category';
 const ASSETS=['./','./index.html','./styles.css','./app.js','./domain.js','./store.js','./files.js','./cat.svg','./icon.svg','./icon-192.png','./icon-512.png','./manifest.webmanifest'];
 self.addEventListener('install',event=>event.waitUntil(caches.open(VERSION).then(cache=>cache.addAll(ASSETS.map(path=>new Request(new URL(path,self.registration.scope),{cache:'reload'})))).then(()=>self.skipWaiting())));
 self.addEventListener('activate',event=>event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k.startsWith('xiaoman-')&&k!==VERSION).map(k=>caches.delete(k)))).then(()=>self.clients.claim())));
