@@ -126,3 +126,59 @@ html, body { max-width: 100%; overflow-x: hidden; overscroll-behavior-x: none; }
 .fixed-prompt-actions button { min-height: 46px; padding: 9px 12px; border: 1px solid #dfe7d5; border-radius: 12px; background: #f7f9f2; color: #526947; font-size: 13px; }
 .fixed-prompt-actions .primary { border-color: #bdd3a7; background: #d3e4bf; color: #405638; font-weight: 600; }
 @media(max-width:360px){.fixed-month-fields{grid-template-columns:1fr;gap:0}.fixed-prompt-actions{grid-template-columns:1fr}}
+
+/* Follow the device appearance, including native date and month controls. */
+:root { --muted: #59664f; }
+.phone :is(.hero-caption, .hero-footer, .budget-line span, .nav-item, .category-choice,
+  .segmented button, .day-label b, .history-hint, .history-hint b, .bottom-whisper),
+.phone :is(.field input, .field textarea, .compact-input input)::placeholder {
+  color: var(--muted);
+}
+.phone .income-value { color: #47694c; }
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+    --bg: #191f19;
+    --paper: #242d24;
+    --ink: #edf3e8;
+    --muted: #b7c6b0;
+    --line: #485a47;
+    --accent: #b6d59e;
+    --accent-dark: #c4dfb2;
+    --soft: #2e3c2c;
+  }
+
+  body { background: var(--bg); }
+  .phone :is(.segmented, .subcategory, .category-choice .cat-circle, .category-icon,
+    .sheet-header button, .sheet-select button, .history-hint, .budget-hero .subtle-link,
+    .fixed-rule-status, .fixed-rule-status.inactive, .fixed-rule-actions button,
+    .fixed-prompt-actions button, .field input[type=file]::file-selector-button) {
+    background-color: var(--soft);
+    border-color: var(--line);
+    color: var(--ink);
+  }
+  .phone :is(.nav-add, .save-button, .history-reminder-button, .subcategory.selected,
+    .category-choice.selected .cat-circle, .fixed-prompt-actions .primary) {
+    background-color: var(--accent);
+    border-color: var(--accent);
+    color: #182515;
+  }
+  .phone :is(.budget-hero, .fixed-rule-card, .fixed-match-card) {
+    border-color: var(--line);
+  }
+  .phone :is(.fixed-match-card, .history-amounts .compact-input input) {
+    background-color: var(--paper);
+    border-color: var(--line);
+    color: var(--ink);
+  }
+  .phone .field :is(input, select, textarea) { color: var(--ink); }
+  .phone :is(.fixed-rule-amount, .fixed-rule-next, .hero-footer strong, .income-value) {
+    color: var(--accent-dark);
+  }
+  .phone :is(.form-message, .sheet-error) { color: #ffb9a9; }
+  .phone :is(.budget-track, .rank-track) { background-color: var(--line); }
+  .phone :is(.budget-track i, .rank-track i) { background-color: var(--accent); }
+  input[type=date]::-webkit-calendar-picker-indicator,
+  input[type=month]::-webkit-calendar-picker-indicator { filter: none; opacity: 1; }
+}
